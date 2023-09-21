@@ -11,26 +11,26 @@ class CustomerSerializer(serializers.ModelSerializer):
 class MenuItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = MenuItem
-        fields = ['name', 'description', 'price']
+        fields = ['id', 'name', 'description', 'price','category']
 
 class OrderSerializer(serializers.ModelSerializer):
     customer = CustomerSerializer()
-    items = MenuItemSerializer(many=True)
+    menuitem = MenuItemSerializer(many=True)
 
     class Meta:
         model = Order
-        fields = ['customer', 'items', 'total_price', 'order_date']
+        fields = ['customer', 'menuitem', 'total_price', 'order_date']
 
     def create(self, validated_data):
         """
         Create and return a new Order instance, given the validated data.
         """
-        items_data = validated_data.pop('items')
+        items_data = validated_data.pop('menuitem')
         order = Order.objects.create(**validated_data)
 
         for item_data in items_data:
             item = MenuItem.objects.get(id=item_data['id'])
-            order.items.add(item)
+            order.menuitem.add(item)
 
         return order
 
@@ -43,11 +43,11 @@ class OrderSerializer(serializers.ModelSerializer):
         instance.order_date = validated_data.get('order_date', instance.order_date)
 
         # Update the items in the order
-        if 'items' in validated_data:
-            instance.items.clear()
-            for item_data in validated_data['items']:
+        if 'menuitem' in validated_data:
+            instance.menuitem.clear()
+            for item_data in validated_data['menuitem']:
                 item = MenuItem.objects.get(id=item_data['id'])
-                instance.items.add(item)
+                instance.menuitem.add(item)
 
         instance.save()
         return instance

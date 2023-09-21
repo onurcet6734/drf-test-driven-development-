@@ -1,32 +1,14 @@
-from rest_framework import generics, mixins
+from rest_framework import generics
 from order.models import Order
 from .serializers import OrderSerializer
 # from rest_framework.permissions import IsAuthenticated
 
-class OrderListView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+class OrderListView(generics.ListCreateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     # permission_classes = [IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
-
-class OrderDetailView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
+class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     # permission_classes = [IsAuthenticated]
-
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
-
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
-
-    def patch(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)
-
-    def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
