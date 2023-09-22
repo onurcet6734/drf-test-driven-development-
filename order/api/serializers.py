@@ -27,17 +27,15 @@ class OrderSerializer(serializers.ModelSerializer):
         """
         customer_data = validated_data.pop('customer') 
         customer, created = Customer.objects.get_or_create(**customer_data) 
+
         menuitem_data = validated_data.pop('menuitem')
-        
-        # menuitem_data bir liste olduğu için bir döngü kullanarak her bir menü öğesini oluşturun
         menuitems = []
         for item_data in menuitem_data:
             menuitem, created = MenuItem.objects.get_or_create(**item_data)
             menuitems.append(menuitem)
         
-        # Şimdi tüm menu öğelerini kullanarak siparişi oluşturabilirsiniz
         order = Order.objects.create(customer=customer, **validated_data)
-        order.menuitem.set(menuitems)
+        order.menuitem.set(menuitems) #many-to-many ilişkisi oldugu için set kullanıldı
 
         return order
 
