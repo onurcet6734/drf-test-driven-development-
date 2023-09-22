@@ -35,7 +35,7 @@ class OrderSerializer(serializers.ModelSerializer):
             menuitems.append(menuitem)
         
         order = Order.objects.create(customer=customer, **validated_data)
-        order.menuitem.set(menuitems) #many-to-many ilişkisi oldugu için set kullanıldı
+        order.menuitem.set(menuitems) #set was used because of the many-to-many relationship
 
         return order
 
