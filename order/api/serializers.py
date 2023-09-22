@@ -25,14 +25,19 @@ class OrderSerializer(serializers.ModelSerializer):
         """
         Create and return a new Order instance, given the validated data.
         """
-        items_data = validated_data.pop('menuitem')
-        order = Order.objects.create(**validated_data)
+        customer_data = validated_data.pop('customer') 
+        customer, created = Customer.objects.get_or_create(**customer_data) 
+        menuitem_data = validated_data.pop('menuitem')
+        order = Order.objects.create(customer=customer, **validated_data)
 
-        for item_data in items_data:
-            item = MenuItem.objects.get(id=item_data['id'])
-            order.menuitem.add(item)
+        for item_data in menuitem_data:
+            item_serializer = MenuItemSerializer(data=item_data)
+            if item_serializer.is_valid():
+                item = item_serializer.save()
+                order.menuitem.add(item)
 
         return order
+
 
     def update(self, instance, validated_data):
         """
