@@ -21,14 +21,14 @@ class CustomerTests(APITestCase):
 
     def test_jwt_authentication(self):
         response = self.client.post(self.url_login, data = {"username": self.username, "password": self.password})
-        self.assertEqual(200, response.status_code)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue("access" in json.loads(response.content))
         self.token = response.data["access"]
         self.client.credentials(HTTP_AUTHORIZATION='Bearer '+ self.token)
 
     def test_create_customer(self):
         response = self.client.post(self.url_listCreate, customer_data = {'name': 'Admin',"user": self.user.id}, format='json')
-        self.assertEqual(201, response.status_code)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_authentication_required(self):
         self.client.credentials()
@@ -47,10 +47,11 @@ class CustomerTests(APITestCase):
           customer_data = {'name': 'Admin3'}
           updateDelete_url = reverse("customer:customer-detail", kwargs={"pk": Customer.objects.create(name="Admin", user=self.user).pk})
           response = self.client.put(updateDelete_url, customer_data, format='json')
-          self.assertEqual(200, response.status_code)
+          self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_delete_customer(self):
         customer = Customer.objects.create(name="Admin", user=self.user)
         updateDelete_url = populate_customer_detail_url(customer.pk)
         response = self.client.delete(updateDelete_url)
-        self.assertEqual(204, response.status_code)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
