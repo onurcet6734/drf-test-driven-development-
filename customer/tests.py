@@ -24,10 +24,14 @@ class CustomerTests(APITestCase):
         self.token = response.data["access"]
         self.client.credentials(HTTP_AUTHORIZATION='Bearer '+ self.token)
 
-
     def test_create_customer(self):
         response = self.client.post(self.url_listCreate, customer_data = {'name': 'Admin',"user": self.user.id}, format='json')
         self.assertEqual(201, response.status_code)
+
+    def test_authentication_required(self):
+        self.client.credentials()
+        response = self.client.get('/customer/list-create', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
     # def test_list_customers(self):
@@ -53,8 +57,4 @@ class CustomerTests(APITestCase):
 
    
 
-    # def test_authentication_required(self):
-    #     self.client.credentials()
-    #     response = self.client.get('/customer/list-create', format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
+    
