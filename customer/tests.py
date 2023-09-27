@@ -5,6 +5,8 @@ from customer.models import Customer
 from django.urls import reverse
 import json
 
+def populate_customer_detail_url(customer_id):
+    return reverse("customer:customer-detail", kwargs={"pk": customer_id})
 
 class CustomerTests(APITestCase):
 
@@ -47,13 +49,8 @@ class CustomerTests(APITestCase):
           response = self.client.put(updateDelete_url, customer_data, format='json')
           self.assertEqual(200, response.status_code)
 
-    # def test_delete_customer(self):
-    #     response = self.client.post('/customer/list-create', self.customer_data, format='json')
-    #     customer_id = response.data['id']
-    #     response = self.client.delete(f'/customer/update-delete/{customer_id}', format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-    #     self.assertEqual(Customer.objects.count(), 0)
-
-   
-
-    
+    def test_delete_customer(self):
+        customer = Customer.objects.create(name="Admin", user=self.user)
+        updateDelete_url = populate_customer_detail_url(customer.pk)
+        response = self.client.delete(updateDelete_url)
+        self.assertEqual(204, response.status_code)
