@@ -4,6 +4,8 @@ from rest_framework import status
 from customer.models import Customer
 from django.urls import reverse
 import json
+from core.jwt_authentication import authenticate_user 
+
 
 def populate_customer_detail_url(customer_id):
     return reverse("customer:customer-detail", kwargs={"pk": customer_id})
@@ -11,7 +13,6 @@ def populate_customer_detail_url(customer_id):
 class CustomerTests(APITestCase):
 
     url_listCreate = reverse("customer:customer-list")
-    url_login = reverse("token_obtain_pair")
 
     def setUp(self):
         self.username = "admin"
@@ -20,11 +21,8 @@ class CustomerTests(APITestCase):
         self.test_jwt_authentication()
 
     def test_jwt_authentication(self):
-        response = self.client.post(self.url_login, data = {"username": self.username, "password": self.password})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue("access" in json.loads(response.content))
-        self.token = response.data["access"]
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer '+ self.token)
+        is_authenticated = authenticate_user(self.client, self.username, self.password)
+        self.assertTrue(is_authenticated)
 
     def test_create_customer(self):
         response = self.client.post(self.url_listCreate, customer_data = {'name': 'Admin',"user": self.user.id}, format='json')

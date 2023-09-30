@@ -2,6 +2,7 @@ from rest_framework import generics
 from customer.models import Customer
 from .serializers import CustomerSerializer
 from rest_framework.permissions import IsAuthenticated
+from customer.api.permissions import NotAuthenticated
 
 class CustomerListView(generics.ListCreateAPIView):
     queryset = Customer.objects.all()
@@ -9,7 +10,7 @@ class CustomerListView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Customer.objects.filter(user = self.request.user)
+        return Customer.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user = self.request.user)
@@ -17,4 +18,4 @@ class CustomerListView(generics.ListCreateAPIView):
 class CustomerDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated] 
