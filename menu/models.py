@@ -1,13 +1,6 @@
 from django.db import models
 from category.models import Category
-import os
-import uuid
 
-def generate_menu_item_image_path(instance, filename):
-    "Dinamik dosya yükleme yolu oluşturur."
-    file_extension = filename.split('.')[-1]
-    generated_name = f"{uuid.uuid4()}.{file_extension}"
-    return os.path.join('menu', generated_name)
     
 class MenuItem(models.Model):
     name = models.CharField(max_length=200)
