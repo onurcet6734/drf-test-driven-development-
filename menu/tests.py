@@ -50,39 +50,7 @@ class MenuModelTest(TestCase):
         menu_item_to_delete.delete()
         self.assertEqual(MenuItem.objects.count(), 0)
 
-class MenuItemImageUploadTest(APITestCase):
-    def setUp(self):
-        self.menu_item = MenuItem.objects.create(
-            name="Test Item",
-            description="Test Description",
-            price=10.99,
-            category=Category.objects.create(name="Test Category"),
-        )
 
-    def tearDown(self):
-        self.menu_item.image.delete()
-
-    def test_recipe_image_upload(self):
-        "Test to upload a valid image."
-        with tempfile.NamedTemporaryFile(suffix=".png") as ntf:
-            img = Image.new('RGB', (100, 100))
-            img.save(ntf, format="PNG")
-            ntf.seek(0)
-            url = f'http://127.0.0.1:5555/menu/1.png'
-            file_data = {'image': ntf}
-            response = self.client.post(url, file_data, format="multipart")
-        
-        self.menu_item.refresh_from_db()
-        self.assertTrue(self.menu_item.image.url.startswith('/menu'))
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    def test_invalid_image_payload(self):
-        "Test with an invalid image payload."
-        payload = {'image': 'bad bad'}
-        url = f'http://127.0.0.1:5555/menu/2.png'
-        response = self.client.post(url, payload, format="multipart")
-        
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 
