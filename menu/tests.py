@@ -2,11 +2,7 @@ from decimal import Decimal
 from django.test import TestCase
 from .models import MenuItem
 from category.models import Category
-import tempfile
-from PIL import Image
-from django.urls import reverse
-from rest_framework import status
-from rest_framework.test import APITestCase
+
 
 
 class MenuModelTest(TestCase):
@@ -49,7 +45,6 @@ class MenuModelTest(TestCase):
         menu_item_to_delete = MenuItem.objects.get(id=self.menu_item.id)
         menu_item_to_delete.delete()
         self.assertEqual(MenuItem.objects.count(), 0)
-
 
 
 
