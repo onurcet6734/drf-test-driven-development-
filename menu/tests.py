@@ -2,6 +2,8 @@ from decimal import Decimal
 from django.test import TestCase
 from .models import MenuItem
 from category.models import Category
+from django.core.files.uploadedfile import SimpleUploadedFile
+import os
 
 
 
@@ -47,8 +49,38 @@ class MenuModelTest(TestCase):
         self.assertEqual(MenuItem.objects.count(), 0)
 
 
+class MenuItemTestCase(TestCase):
+    def setUp(self):
+        self.category = Category.objects.create(name="Test Category")
 
+    def tearDown(self):
+        self.category.delete()
 
-#ekleme -> 302
-#güncelleme -> 302
-#silme -> 302
+    def test_image_upload(self):
+        image_path = os.path.join(os.path.dirname(__file__),'image.png')
+        with open(image_path, 'rb') as image_file:
+            image = SimpleUploadedFile("image.png", image_file.read(), content_type="image/png")
+
+        menu_item = MenuItem.objects.create(
+            name="Test Item",
+            description="Test Description",
+            price=10.99,
+            category=self.category,
+            image=image  
+        )
+
+        saved_menu_item = MenuItem.objects.get(pk=menu_item.pk)
+        self.assertTrue(saved_menu_item.image.name.startswith('menu/'))
+        
+
+    def test_image_upload_blank(self):
+    
+        menu_item = MenuItem.objects.create(
+            name="Test Item",
+            description="Test Description",
+            price=10.99,
+            category=self.category,
+        )
+        image_exists = MenuItem.objects.filter(pk=menu_item.pk, image=None).exists()  
+        self.assertFalse(image_exists)
+
